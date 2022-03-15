@@ -1,0 +1,205 @@
+{
+	"info": {
+		"_postman_id": "2f25e3bf-3c43-4e5f-a3d7-dcdcf264f625",
+		"name": "Labb_Postman",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "List Users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);\r",
+							"pm.globals.set(\"user_id\", jsonData.data[4].id);\r",
+							"\r",
+							"pm.test(\"Status code is 200\",() => pm.expect(responseCode.code).to.equal(200));\r",
+							"pm.test(\"Response time is below 2 seconds\",() => pm.expect(pm.response.responseTime).to.be.below(2000));\r",
+							"pm.test(\"Number of reults per page is 6\",() => pm.expect(jsonData.data.length).to.equal(6));\r",
+							"pm.test(\"Second user's avatar is not null on page 1\", ()=> pm.expect(jsonData.data[1].avtar).to.not.equal(null));\r",
+							"\r",
+							"pm.test(\"Third user's lastname is Wong\", ()=> pm.expect(jsonData.data[2].last_name).to.equal(\"Wong\"));\r",
+							"pm.test(\"Eve is somewhere in response\",()=> pm.expect(responseBody).to.include(\"Eve\"));\r",
+							"\r",
+							"console.log(pm.globals.get(\"user_id\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/users",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Single User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"pm.test(\"Status code is 200\",() => pm.expect(responseCode.code).to.equal(200));\r",
+							"pm.test(\"Response time is below 2 seconds\",() => pm.expect(pm.response.responseTime).to.be.below(2000));\r",
+							"\r",
+							"pm.test(\"User id is the same id as global variable\", ()=> pm.expect(jsonData.data.id).to.equal(pm.globals.get(\"user_id\")));\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/users/{{user_id}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users",
+						"{{user_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Creat User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);\r",
+							"pm.globals.set(\"my_user\", jsonData.id);\r",
+							"\r",
+							"pm.test(\"Status code is 201\",() => pm.expect(responseCode.code).to.equal(201));\r",
+							"pm.test(\"Response time is below 2 seconds\",() => pm.expect(pm.response.responseTime).to.be.below(2000));\r",
+							"\r",
+							"pm.test(\"Id is not null\", () => pm.expect(jsonData.id).to.not.equal(null));\r",
+							"pm.test(\"CreatedAt is not null\", ()=> pm.expect(jsonData.createdAt).to.not.equal(null));\r",
+							"pm.test(\"User's name\", ()=> pm.expect(jsonData.name).to.equal(\"Zheng Lin\"));\r",
+							"pm.test(\"User's job\", ()=> pm.expect(jsonData.job).to.equal(\"tester\"));\r",
+							"\r",
+							"console.log(pm.globals.get(\"my_user\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Zheng Lin\",\r\n    \"job\": \"tester\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/users",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"pm.test(\"Status code is 200\",() => pm.expect(responseCode.code).to.equal(200));\r",
+							"pm.test(\"Response time is below 2 seconds\",() => pm.expect(pm.response.responseTime).to.be.below(2000));\r",
+							"\r",
+							"pm.test(\"User's job\", ()=> pm.expect(jsonData.job).to.equal(\"Postman Master\"));\r",
+							"pm.test(\"UpdatedAt is not null\", ()=> pm.expect(jsonData.createdAt).to.not.equal(null));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Zheng Lin\",\r\n    \"job\": \"Postman Master\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/users/{{my_user}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users",
+						"{{my_user}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\",() => pm.expect(responseCode.code).to.equal(204));\r",
+							"pm.test(\"Response time is below 2 seconds\",() => pm.expect(pm.response.responseTime).to.be.below(2000));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/users/{{my_user}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users",
+						"{{my_user}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
